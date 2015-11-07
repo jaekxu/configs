@@ -1,0 +1,54 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          dropbox
+# Required-Start:    $syslog
+# Required-Stop:     $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
+
+# dropbox service
+
+DAEMON=/usr/local/bin/dropbox
+
+start() {
+    $DAEMON start
+}
+
+stop() {
+    $DAEMON stop
+}
+
+status() {
+    $DAEMON status
+}
+
+case "$1" in
+
+    start)
+        start
+        ;;
+
+    stop)
+        stop
+        ;;
+
+    restart|reload|force-reload)
+        stop
+        start
+        ;;
+
+    status)
+        status
+        ;;
+
+    *)
+        echo "Usage: /etc/init.d/dropbox {start|stop|reload|force-reload|restart|status}"
+        exit 1
+
+esac
+
+exit 0

@@ -1,0 +1,54 @@
+---
+- hosts: hypervisor
+  sudo: yes
+  vars:
+    new_ip: 127.0.0.1
+    dest_ip: 127.0.0.1
+  tasks:
+    - name: Check if 80 added
+      shell: iptables -t nat -L -n | grep dpt:80 | grep -q {{new_ip}}
+      register: enabled_80
+      ignore_errors: yes
+      changed_when: no
+      always_run: yes
+    - name: Add 80 to iptables
+      command: iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination {{dest_ip}} --src {{new_ip}}
+      when: enabled_80.rc != 0
+      notify: save iptables
+
+    - name: Check if 49152-49162 added
+      shell: iptables -t nat -L | grep -q 49152
+      register: enabled_6890
+      ignore_errors: yes
+      changed_when: no
+      always_run: yes
+    - name: Add 49152-49162 to iptables
+      command: iptables -t nat -A PREROUTING -p tcp --dport 49152:49162 -j DNAT --to-destination {{dest_ip}}
+      when: enabled_6890.rc != 0
+      notify: save iptables
+
+
+    - name: Check if 32400 added
+      shell: iptables -t nat -L -n | grep tcp dpt:32400 | grep -q {{new_ip}}
+      register: enabled_32400
+      ignore_errors: yes
+      changed_when: no
+      always_run: yes
+    - name: Add 32400 to iptables
+      #command: iptables -t nat -A PREROUTING -p tcp --dport 32400 -j DNAT --to-destination {{dest_ip}} --src {{new_ip}}
+      command: iptables -t nat -A PREROUTING -p tcp --dport 32400 -j DNAT --to-destination {{dest_ip}}
+      when: enabled_32400.rc != 0
+    #- name: Block all 32400
+    #  command: iptables -A INPUT -p tcp --dport 32400 -j DROP ! -s {{new_ip}}
+      notify: save iptables
+
+  handlers:
+    - name: save iptables
+      command: iptables-save
+ 
+    #- name: Enable UFW
+    #  ufw: state=enabled policy=allow logging=on log=yes
+
+    #- name: Enable Plex port 32400
+    #  ufw: rule=allow port=32400 protocol=tcp interface=em1 src={{new_ip}} dest={{dest_ip}} direction=in state=enabled
+    #  remote_user: root

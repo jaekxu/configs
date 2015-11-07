@@ -1,0 +1,16 @@
+---
+- hosts: vm01
+  sudo: yes
+  tasks:
+    - name: Create mount point
+      file: path=/mnt/Downloads state=directory
+
+    - name: Mount shared volume
+      mount: name=/mnt/Downloads src="192.168.122.1:/srv/Downloads" fstype=nfs state=mounted
+
+    - name: Create mount point dropbox-git
+      file: path=/mnt/git state=directory
+
+    - name: Mount shared volume dropbox-git
+      mount: name=/mnt/git src="192.168.122.1:/srv/git" fstype=nfs state=mounted
+

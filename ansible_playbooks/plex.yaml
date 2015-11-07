@@ -1,0 +1,36 @@
+---
+- hosts: vm02
+  sudo: yes
+  tasks:
+  - name: download plex
+    get_url: url="https://plex.tv/downloads/latest/1?channel=16&build=linux-ubuntu-x86_64&distro=ubuntu&X-Plex-Token=UKnYDpehydFzKHucsx7x"
+             dest="/usr/local/src/plexmediaserver_0.9.12.13"
+    tags: install
+  - name: install plex
+    apt: deb=/usr/local/src/plexmediaserver_0.9.12.13
+    tags: install
+  - name: download myanimelist.net plugin
+    get_url: url="http://sourceforge.net/projects/malagent/files/latest/download"
+             dest="/usr/local/src/malagent.rar"
+  - name: check MAL agent install
+    stat: path="/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-ins/MyAnimeList.bundle"
+    register: mal
+    ignore_errors: true
+    tags: plex
+  - debug: var=mal.stat
+    tags: plex
+  - name: install MAL agent
+    command: /usr/bin/unrar x /usr/local/src/malagent.rar "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-ins"
+    when: mal.stat.exists == False
+    tags: plex
+  - name: set MAL ownership
+    file: path="/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-ins/MyAnimeList.bundle"
+          recurse=yes
+          owner=plex
+          group=plex
+    tags: plex
+  #- name: install Hama agent
+  #  unarchive: copy=no src="/usr/local/src/hama.zip" dest="/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-ins"
+  #             owner=plex group=plex
+  #  tags: hama
+#ssh -L 32400:localhost:32400 gosleep@62.210.75.235 ssh -L 32400:localhosst:32400 ubuntu@192.168.122.220

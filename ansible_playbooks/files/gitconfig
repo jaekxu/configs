@@ -1,0 +1,15 @@
+[core]
+	editor = vim
+
+[color]
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+
+[user]
+	name = jake
+	email = gosleep@arch_vm
+
+[push]
+	default = matching

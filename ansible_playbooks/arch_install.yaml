@@ -1,0 +1,52 @@
+- hosts: localhost
+  gather_facts: false
+  tasks: 
+  - service: name={{ item }} state=started enabled=yes
+    sudo: true
+    with_items:
+      - systemd-networkd
+      - systemd-resolved
+      - sshd
+      - vboxservice
+  - copy: src=pacman.conf dest=/etc/pacman.conf
+    sudo: true
+    tags: [yaourt]
+  - pacman: name={{ item }} state=present
+    sudo: true
+    with_items:
+      - openssh
+      - terminus-font
+      - vim
+      - tmux
+      - python2
+      - git
+      - wget
+      - htop
+      - iperf
+      - ipython2
+      - python2-pip
+      - libxml2
+      - libxslt
+      - unzip
+      - yaourt
+    tags: [pacman]
+  #- command: yaourt -S {{ item }} --noconfirm
+  #  sudo: true
+  #  with_items:
+  #  - docker-git
+  #  tags: [yaourt]
+  - git: repo=//home/gosleep/sf_dropbox_git/{{ item }}.git
+         dest=/home/gosleep/git/{{ item }}
+    sudo: false
+    with_items:
+      - ansible_playbooks
+      - scripts
+    tags: [git]
+  - name: git config
+    copy: src=files/gitconfig dest=~/.gitconfig
+    tags: [git]
+  #- modprobe: name={{ item }} state=present
+  #  with_items:
+  #    - vboxguest
+  #    - vboxsf
+  #    - vboxvideo

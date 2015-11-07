@@ -1,0 +1,63 @@
+---
+- hosts: vm*
+  sudo: yes
+  tasks:
+  - name: Setup VM01 ssh key on target host
+    authorized_key: user=ubuntu
+                    key="{{ lookup('file', '/home/ubuntu/.ssh/id_rsa.pub') }}"
+    
+- hosts: vm02
+  sudo: yes
+  tasks:
+    - name: Create mount point
+      file: path=/mnt/Downloads state=directory
+
+    - name: Mount shared volume
+      mount: name=/mnt/Downloads src="192.168.122.1:/srv/Downloads" fstype=nfs state=mounted
+
+    - name: Install multiverse
+      apt_repository: repo='deb http://mirrors.online.net/ubuntu trusty multiverse' state=present
+
+    - name: Install multiverse updates
+      apt_repository: repo='deb http://mirrors.online.net/ubuntu trusty-updates multiverse' state=present
+
+    - name: Install nginx PPA
+      apt_repository: repo="ppa:nginx/stable"
+
+    - name: Refresh apt cache
+      apt: update_cache=yes
+
+    - name: Install rtorrent and dependencies
+      apt: name={{ item }} state=present
+      with_items:
+        - rtorrent
+        - nginx
+        - python-passlib
+        - unzip
+        - unrar-free
+        - mediainfo
+        #- ffmpeg
+        - curl
+        - php5-fpm
+        - php5-cli
+        - php5-geoip
+        - screen
+
+    - name: Setup rtorrent user
+      user: name=rtorrent shell=/bin/bash home=/home/rtorrent
+
+    - name: Setup VM01 ssh key on rtorrent host
+      authorized_key: user=rtorrent
+                      key="{{ lookup('file', '/home/ubuntu/.ssh/id_rsa.pub') }}"
+
+    - name: Create rtorrent config files
+      file:
+        path={{ item.path }} state={{ item.state }}
+      with_items:
+        - { 'path': '/home/rtorrent/.session', 'state': 'directory' }
+        - { 'path': '/home/rtorrent/.rtorrent.rc', 'state': 'touch' }
+#        - { 'path': '/mnt/Downloads/rtorrent/watch}', 'state': 'directory' }
+
+    - name: Configure rtorrent
+      template: src=rtorrent.j2 dest=/home/.rtorrent.rc owner=rtorrent
+

@@ -1,0 +1,30 @@
+---
+- hosts: vm*
+  sudo: yes
+  tasks:
+  - name: Install packages
+    apt: name={{ item }} state=present
+    with_items:
+      - vim
+      - iftop
+      - git
+      - htop
+      - update-manager-core
+      - nfs-common
+      - telnet
+      - curl
+      - strace
+      - tree
+      - python-pip
+      - python-virtualenv
+      - python-lxml
+      - unzip
+  - name: install ipython lxml
+    pip: name={{ item }}
+    with_items:
+      - ipython
+      - lxml
+      - requests
+      - beautifulsoup4
+      - pylint
+ 

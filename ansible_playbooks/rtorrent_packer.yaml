@@ -1,0 +1,57 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+    - name: Setup rtorrent user
+      user: name=rtorrent shell=/bin/bash home=/home/rtorrent group=nogroup
+
+    - name: Setup VM01 ssh key on rtorrent host
+      authorized_key: user=rtorrent
+                      key="{{ lookup('file', '/home/ubuntu/.ssh/id_rsa.pub') }}"
+
+    - name: Create rtorrent config files
+      file:
+        path={{ item.path }} state={{ item.state }} owner=rtorrent group=rtorrent
+      with_items:
+        - { 'path': '/home/rtorrent/session', 'state': 'directory'}
+        #- { 'path': '/home/rtorrent/.rtorrent.rc', 'state': 'touch' }
+    - name: Create rtorrent config files
+      sudo: no
+      remote_user: rtorrent
+      file:
+        path={{ item.path }} state={{ item.state }} mode=g+w
+      with_items:
+        - { 'path': '/mnt/Downloads/rtorrent', 'state': 'directory' }
+        - { 'path': '/mnt/Downloads/rtorrent/torrents', 'state': 'directory' }
+        - { 'path': '/mnt/Downloads/rtorrent/watch', 'state': 'directory' }
+        - { 'path': '/mnt/Downloads/HKTV', 'state': 'directory' }
+        - { 'path': '/mnt/Downloads/Anime', 'state': 'directory' }
+
+    - name: Remove Nginx default
+      file: name='/etc/nginx/sites-enabled/default' state=absent
+
+    - name: Configure nginx rutorrent
+      template: src=nginx_rutorrent.j2 dest=/etc/nginx/sites-enabled/rutorrent
+
+    - name: add htpasswd
+      htpasswd: path=/etc/nginx/htpasswd name=gosleep password=hsWiXP owner=root group=www-data mode=0640
+      
+    - name: Configure rtorrent rc
+      template: src=rtorrent.rc.j2 dest=/home/rtorrent/.rtorrent.rc
+
+#- hosts: vm02
+#  user: rtorrent
+#  tasks:
+    - name: Check rtorrent process
+      command: ps -C rtorrent
+      register: found_rtorrent_process
+      ignore_errors: yes
+      changed_when: no
+      always_run: yes
+
+    - name: run rtorrent
+      sudo: no
+      remote_user: rtorrent
+      command: screen -S rtorrent -d -m rtorrent
+      when: found_rtorrent_process.rc != 0
+ 

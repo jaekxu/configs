@@ -1,0 +1,9 @@
+- hosts: localhost
+  sudo: yes
+  tasks:
+    - get_url: url="https://dl.bintray.com/mitchellh/packer/packer_0.8.2_linux_386.zip"
+               dest=/tmp/packer.zip
+    - file: dest=/usr/local/packer state=directory
+    - unarchive: src=/tmp/packer.zip
+                 dest=/usr/local/packer
+    - file: src=/usr/local/packer/packer dest=/usr/local/bin/packer state=link

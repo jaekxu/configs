@@ -1,0 +1,22 @@
+- hosts: vm02
+  sudo: yes
+  tasks:
+    - name: Create rutorrent in /var/www
+      file: path=/var/www/rutorrent state=directory owner=www-data group=www-data
+    - name: Download rutorrent
+      get_url: url="https://bintray.com/artifact/download/novik65/generic/rutorrent-3.6.tar.gz"
+               dest=/usr/local/src/rutorrent-3.6.tar.gz
+    - name: Extrac rutorrent
+      # use unarchive
+      shell: tar xf /usr/local/src/rutorrent-3.6.tar.gz -C /var/www/
+             creates=/var/www/rutorrent/index.html
+    - name: Download rutorrent-plugins
+      get_url: url="https://bintray.com/artifact/download/novik65/generic/plugins-3.6.tar.gz"
+               dest=/usr/local/src/plugins-3.6.tar.gz
+    - name: Extrac rutorrent-plugins
+      shell: tar xf /usr/local/src/plugins-3.6.tar.gz -C /var/www/rutorrent
+             creates=/var/www/rutorrent/plugins/theme
+    - name: Chown www-data
+      file: path=/var/www/rutorrent state=directory owner=www-data group=www-data recurse=true
+
+

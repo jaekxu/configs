@@ -1,0 +1,29 @@
+---
+- hosts: hypervisor
+  user: gosleep
+  tasks:
+    #- name: download dropbox installer
+    #  get_url: url="https://www.dropbox.com/download?plat=lnx.x86_64"
+    #           dest=/tmp/
+    #  register: dropbox_filename
+    #- name: extract dropbox installer
+    #  unarchive: src="{{ dropbox_filename.dest }}"
+    #             dest={{ ansible_env.HOME }}
+    #             copy=no
+    #- name: extract dropbox link
+    #  script: grep_dropbox_link.sh
+    #  register: dropbox_link
+    #- name: Link dropbox
+    #  pause: prompt="Open link in broswer {{ dropbox_link.stdout }}"
+    #  #needs to sleep to wait until account is linked
+    #- name: Download dropbox binary
+    #  sudo: yes
+    #  get_url: url="http://www.dropbox.com/download?dl=packages/dropbox.py"
+    #           dest=/usr/local/bin/dropbox
+    #           mode=ugo+x
+    #- name: Install init script
+    #  sudo: yes
+    #  template: src=dropbox.init.j2 dest=/etc/init.d/dropbox mode=ugo+x
+    #- name: Start dropbox init on boot
+    #  service: name=dropbox enabled=yes state=running
+
