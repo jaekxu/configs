@@ -1,0 +1,26 @@
+export SVN_EDITOR='vim'
+case "$-" in *i*) if [ -r ~/.bashrc ]; then . ~/.bashrc; fi;; esac
+
+##
+# Your previous /Users/jxu/.bash_profile file was backed up as /Users/jxu/.bash_profile.macports-saved_2013-02-19_at_00:16:18
+##
+
+# MacPorts Installer addition on 2013-02-19_at_00:16:18: adding an appropriate PATH variable for use with MacPorts.
+export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+# Finished adapting your PATH environment variable for use with MacPorts.
+
+
+# Setting PATH for Python 2.7
+# The orginal version is saved in .bash_profile.pysave
+PATH="/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/:/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/jxu/Library/Python/2.7/bin/:${PATH}"
+export PATH
+
+##
+# Your previous /Users/jxu/.bash_profile file was backed up as /Users/jxu/.bash_profile.macports-saved_2014-11-16_at_16:22:35
+##
+
+# MacPorts Installer addition on 2014-11-16_at_16:22:35: adding an appropriate PATH variable for use with MacPorts.
+export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+# Finished adapting your PATH environment variable for use with MacPorts.
+
+source /opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/virtualenvwrapper.sh
